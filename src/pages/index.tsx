@@ -284,13 +284,13 @@ export default function HomePage() {
                 Vision AI untuk pertanian presisi
               </span>
               <h1 className="mt-4 text-4xl font-semibold leading-tight text-emerald-900 sm:text-5xl">
-                Detektor Penyakit Daun
+                Detektor Penyakit Pada Daun Tanaman
               </h1>
               <p className="mt-4 max-w-3xl text-lg text-slate-700">
                 Unggah foto daun tanaman Anda dan dapatkan diagnosis cepat
                 lengkap dengan langkah pengobatan, perawatan, serta
                 pencegahan. Model ini dilatih untuk mendeteksi penyakit pada
-                anggur, apel, jagung, kentang, dan tomat.
+                anggur, apel, jagung, kentang, tomat, buncis, cabai, durian, pisang, dan selada.
               </p>
             </section>
 
