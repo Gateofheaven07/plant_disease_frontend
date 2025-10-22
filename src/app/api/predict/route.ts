@@ -203,7 +203,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Typical shape expected from the Space based on backend usage:
-    // { label: string, percentage: number, probabilities?: Record<string, number> }
+    // { label: string, percentage: number, probabilities?: Record<string, number>, info?: object }
     const obj = result as Record<string, unknown>;
     let label = typeof obj["label"] === "string" ? (obj["label"] as string) : undefined;
     const rawPercentage = obj["percentage"];
@@ -222,6 +222,13 @@ export async function POST(req: NextRequest) {
         if (Number.isFinite(num)) map[k] = num;
       }
       probabilities = map;
+    }
+
+    // Extract info if present from remote
+    let remoteInfo: DiseaseInfo | undefined;
+    const maybeInfo = obj["info"] as unknown;
+    if (maybeInfo && typeof maybeInfo === "object" && !Array.isArray(maybeInfo)) {
+      remoteInfo = maybeInfo as DiseaseInfo;
     }
 
     // Fallback: some Spaces return { data: [ { label, percentage, ... } ] }
@@ -245,6 +252,10 @@ export async function POST(req: NextRequest) {
           }
           probabilities = map;
         }
+        const innerInfo = first["info"] as unknown;
+        if (!remoteInfo && innerInfo && typeof innerInfo === "object" && !Array.isArray(innerInfo)) {
+          remoteInfo = innerInfo as DiseaseInfo;
+        }
       }
     }
 
@@ -255,27 +266,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const confidence = Number(percentage);
+    const percentageNum = Number(percentage);
     const infoMap = await loadDiseaseInfo();
-    const info: DiseaseInfo = infoMap[label] ?? infoMap["DEFAULT"] ?? {};
+    const infoFallback: DiseaseInfo = (label ? infoMap[label] : undefined) ?? infoMap["DEFAULT"] ?? {};
+    const info: DiseaseInfo = remoteInfo && Object.keys(remoteInfo).length > 0 ? remoteInfo : infoFallback;
 
-    // Expand probabilities with labels from class_indices.json
-    const labels = await loadLabels();
-    const finalProbs: Probabilities = {};
-    for (const cls of labels) {
-      const val = probabilities?.[cls];
-      finalProbs[cls] = Number.isFinite(val as number) ? (val as number) : 0;
-    }
-    if (!probabilities && Number.isFinite(confidence)) {
-      finalProbs[label] = confidence;
+    // If remote probabilities not provided, expand a deterministic map for FE stability
+    let finalProbs: Probabilities | undefined = probabilities;
+    if (!finalProbs) {
+      const labels = await loadLabels();
+      const map: Probabilities = {};
+      for (const cls of labels) {
+        map[cls] = 0;
+      }
+      if (label && Number.isFinite(percentageNum)) {
+        map[label] = percentageNum;
+      }
+      finalProbs = map;
     }
 
+    // Return Hugging Face-like schema
     return NextResponse.json(
       {
-        prediction: label,
-        confidence: Number.isFinite(confidence) ? confidence : 0,
-        info,
+        label,
+        percentage: Number.isFinite(percentageNum) ? percentageNum : 0,
         probabilities: finalProbs,
+        info,
       },
       { status: 200 },
     );

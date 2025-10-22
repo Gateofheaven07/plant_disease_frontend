@@ -85,7 +85,54 @@ export default function HomePage() {
         throw new Error("Server tidak mengembalikan data prediksi.");
       }
 
-      return payload as PredictionResult;
+      // Map API response to UI shape (support HF schema and legacy schema)
+      type HfPayload = {
+        label?: unknown;
+        percentage?: unknown;
+        info?: DiseaseInfo;
+      };
+      type LegacyPayload = {
+        prediction?: unknown;
+        confidence?: unknown;
+        info?: DiseaseInfo;
+      };
+
+      const obj = payload as HfPayload & LegacyPayload;
+
+      // Prefer HF keys if present
+      const label = typeof obj.label === "string" ? obj.label : undefined;
+      const percentage =
+        typeof obj.percentage === "number"
+          ? obj.percentage
+          : typeof obj.percentage === "string"
+            ? Number(obj.percentage)
+            : undefined;
+
+      if (label && typeof percentage === "number") {
+        return {
+          prediction: label,
+          confidence: percentage,
+          info: (obj.info ?? {}) as DiseaseInfo,
+        } satisfies PredictionResult;
+      }
+
+      // Fallback to legacy keys
+      const legacyPred = typeof obj.prediction === "string" ? obj.prediction : undefined;
+      const legacyConf =
+        typeof obj.confidence === "number"
+          ? obj.confidence
+          : typeof obj.confidence === "string"
+            ? Number(obj.confidence)
+            : undefined;
+      if (legacyPred && typeof legacyConf === "number") {
+        return {
+          prediction: legacyPred,
+          confidence: legacyConf,
+          info: (obj.info ?? {}) as DiseaseInfo,
+        } satisfies PredictionResult;
+      }
+
+      throw new Error("Format data prediksi tidak dikenali oleh klien.");
     },
     onMutate: () => {
       setErrorMessage(null);
@@ -192,10 +239,10 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Detektor Penyakit Daun</title>
+        <title>Detektor Penyakit Pada Daun Tanaman</title>
         <meta
           name="description"
-          content="Analisis cepat penyakit daun anggur, apel, jagung, kentang, dan tomat berbasis machine learning."
+          content="Analisis cepat penyakit daun tanaman Anggur, Apel, Jagung, Kentang, Tomat, Buncis, Cabai, Durian, Pisang dan Selada  berbasis machine learning."
         />
       </Head>
 
@@ -388,12 +435,6 @@ export default function HomePage() {
             <p>
               &copy; {new Date().getFullYear()} Project Daun. Semua hak
               dilindungi.
-            </p>
-            <p>
-              Terhubung ke API:{" "}
-              <span className="font-semibold text-emerald-700">
-                {API_BASE_URL}
-              </span>
             </p>
           </div>
         </footer>
