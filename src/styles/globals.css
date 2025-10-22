@@ -129,4 +129,16 @@
       transform: translateY(-20px) rotate(180deg);
     }
   }
+
+  /* Mobile tweaks for decorative elements */
+  @media (max-width: 640px) {
+    .floating-elements::before,
+    .floating-elements::after {
+      display: none;
+    }
+
+    .leaf-pattern {
+      background-size: 60px 60px, 90px 90px, 120px 120px;
+    }
+  }
 }

@@ -244,11 +244,12 @@ export default function HomePage() {
           name="description"
           content="Analisis cepat penyakit daun tanaman Anggur, Apel, Jagung, Kentang, Tomat, Buncis, Cabai, Durian, Pisang dan Selada  berbasis machine learning."
         />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <div className="min-h-screen flex flex-col relative">
         {/* Background decorative elements */}
-        <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="fixed inset-0 pointer-events-none z-0 hidden md:block">
           {/* Floating orbs */}
           <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-emerald-400/20 to-transparent rounded-full blur-xl animate-pulse"></div>
           <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-lime-400/20 to-transparent rounded-full blur-lg animate-pulse delay-1000"></div>
@@ -275,7 +276,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <main className="flex-1 py-16 sm:py-20 relative z-10">
+        <main className="flex-1 py-12 sm:py-20 relative z-10">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 sm:px-8">
             {/* Header Section */}
             <section className="flex flex-col items-center text-center floating-elements">
@@ -286,10 +287,10 @@ export default function HomePage() {
               <h1 className="mt-4 text-4xl font-semibold leading-tight text-emerald-900 sm:text-5xl">
                 Detektor Penyakit Pada Daun Tanaman
               </h1>
-              <p className="mt-4 max-w-3xl text-lg text-slate-700">
+              <p className="mt-4 max-w-3xl text-base sm:text-lg text-slate-700">
                 Unggah foto daun tanaman Anda dan dapatkan diagnosis cepat
                 lengkap dengan langkah pengobatan, perawatan, serta
-                pencegahan. Model ini dilatih untuk mendeteksi penyakit pada
+                pencegahan. Model ini dilatih untuk mendeteksi penyakit pada daun
                 anggur, apel, jagung, kentang, tomat, buncis, cabai, durian, pisang, dan selada.
               </p>
             </section>
@@ -326,7 +327,7 @@ export default function HomePage() {
 
             {/* Upload Card Section - Landscape Layout */}
             <section className="flex justify-center floating-elements">
-              <div className="glass-panel w-full max-w-6xl rounded-3xl border border-emerald-100 p-10 shadow-soft">
+              <div className="glass-panel w-full max-w-6xl rounded-3xl border border-emerald-100 p-6 md:p-10 shadow-soft">
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
                   {/* Upload Area - Left Side */}
                   <div className="flex-1">
@@ -335,31 +336,31 @@ export default function HomePage() {
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
                       onDrop={handleDrop}
-                      className={`flex cursor-pointer flex-col items-center justify-center gap-6 rounded-2xl border-2 border-dashed p-10 text-center transition-all duration-200 ${
+                      className={`flex cursor-pointer flex-col items-center justify-center gap-6 rounded-2xl border-2 border-dashed p-6 sm:p-8 md:p-10 text-center transition-all duration-200 ${
                         isDragging
                           ? "border-emerald-500 bg-emerald-50"
                           : "border-emerald-200 bg-white/60 hover:border-emerald-400"
                       }`}
                     >
-                      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                      <span className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 24 24"
                           fill="currentColor"
-                          className="h-8 w-8"
+                          className="h-6 w-6 md:h-8 md:w-8"
                           aria-hidden
                         >
                           <path d="M12 3a5 5 0 0 1 5 5v1h.75A2.25 2.25 0 0 1 20 11.25v5.5A2.25 2.25 0 0 1 17.75 19H6.25A2.25 2.25 0 0 1 4 16.75v-5.5A2.25 2.25 0 0 1 6.25 9H7V8a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v1h6V8a3 3 0 0 0-3-3Zm-.75 5.5a.75.75 0 0 1 1.5 0v3.19l1.22-1.22a.75.75 0 1 1 1.06 1.06l-2.5 2.5a.75.75 0 0 1-1.06 0l-2.5-2.5a.75.75 0 1 1 1.06-1.06l1.22 1.22Z" />
                         </svg>
                       </span>
                       <div className="flex flex-col gap-2">
-                        <p className="text-lg font-semibold text-emerald-900">
+                        <p className="text-base sm:text-lg font-semibold text-emerald-900">
                           Tarik dan letakkan gambar daun
                         </p>
-                        <p className="text-base text-slate-600">
+                        <p className="text-sm sm:text-base text-slate-600">
                           atau klik untuk memilih dari perangkat Anda
                         </p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-xs sm:text-sm text-slate-500">
                           Format: {acceptedFormats} | Maks {MAX_FILE_SIZE_MB}MB
                         </p>
                       </div>
@@ -388,12 +389,12 @@ export default function HomePage() {
                     )}
 
                     <div className="flex flex-col gap-4">
-                      <div className="flex gap-3">
+                      <div className="flex flex-col sm:flex-row gap-3">
                         <button
                           type="button"
                           onClick={handleSubmit}
                           disabled={!file || isPending}
-                          className="flex-1 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-600/40 hover:scale-105 disabled:cursor-not-allowed disabled:from-emerald-300 disabled:to-emerald-200 disabled:text-emerald-500 disabled:shadow-none disabled:scale-100"
+                          className="w-full sm:flex-1 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:from-emerald-700 hover:to-emerald-600 hover:shadow-emerald-600/40 hover:scale-105 disabled:cursor-not-allowed disabled:from-emerald-300 disabled:to-emerald-200 disabled:text-emerald-500 disabled:shadow-none disabled:scale-100"
                         >
                           Analisis Gambar
                         </button>
@@ -401,7 +402,7 @@ export default function HomePage() {
                           <button
                             type="button"
                             onClick={resetSelection}
-                            className="rounded-full border-2 border-emerald-500 bg-white/90 px-6 py-4 text-base font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105"
+                            className="w-full sm:w-auto rounded-full border-2 border-emerald-500 bg-white/90 px-6 py-4 text-base font-semibold text-emerald-600 transition-all hover:bg-emerald-500 hover:text-white hover:shadow-lg hover:shadow-emerald-500/30 hover:scale-105"
                           >
                             Ganti
                           </button>
@@ -433,7 +434,7 @@ export default function HomePage() {
         <footer className="border-t border-emerald-100 bg-white/70 py-6">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
             <p>
-              &copy; {new Date().getFullYear()} Project Daun. Semua hak
+              &copy; {new Date().getFullYear()} Project Daun - Plant Disease. Semua hak
               dilindungi.
             </p>
           </div>
