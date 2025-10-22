@@ -63,7 +63,7 @@ export default function HomePage() {
       let response: Response;
 
       try {
-        response = await fetch(`${API_BASE_URL}/api/predict`, {
+        response = await fetch(`/api/predict`, {
           method: "POST",
           body: formData,
           // HILANGKAN opsi signal: signal,
