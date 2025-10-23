@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Buffer } from "node:buffer";
 import diseaseInfo from "@/data/disease_info.json";
+import { ALLOWED_PLANTS, isAllowedPlantLabel, parsePlantFromLabel } from "@/utils/leafValidation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -263,6 +264,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Response model tidak mengandung label atau percentage." },
         { status: 502 },
+      );
+    }
+
+    // Enforce allowed plant categories (server-side gate)
+    if (!isAllowedPlantLabel(label)) {
+      const plant = parsePlantFromLabel(label) ?? label;
+      const daftar = ALLOWED_PLANTS.join(", ");
+      return NextResponse.json(
+        {
+          error:
+            `Gambar tidak valid. Sistem hanya memproses daun tanaman berikut: ${daftar}. Ditemukan: ${plant}.`,
+        },
+        { status: 400 },
       );
     }
 

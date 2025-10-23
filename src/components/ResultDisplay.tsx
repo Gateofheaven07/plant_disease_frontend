@@ -66,7 +66,7 @@ export default function ResultDisplay({
       </header>
 
       <div className="flex flex-col gap-3 w-full md:w-auto">
-        <span className="text-sm font-medium text-emerald-700">Keyakinan Model</span>
+        <span className="text-sm font-medium text-emerald-700">Confident Rate</span>
         <div className="w-full md:w-80 h-3 rounded-full bg-emerald-100 overflow-hidden">
           <div
             className="h-full bg-gradient-to-r from-emerald-400 via-green-400 to-lime-300 transition-all duration-500"

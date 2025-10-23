@@ -9,6 +9,7 @@ import {
 import Head from "next/head";
 import { useMutation } from "@tanstack/react-query";
 import ResultDisplay, { DiseaseInfo } from "@/components/ResultDisplay";
+import { validateLeafImage } from "@/utils/leafValidation";
 
 const ACCEPTED_TYPES = [
   "image/jpeg",
@@ -166,7 +167,7 @@ export default function HomePage() {
     [],
   );
 
-  const validateAndStoreFile = useCallback((candidate: File) => {
+const validateAndStoreFile = useCallback(async (candidate: File) => {
     if (!ACCEPTED_TYPES.includes(candidate.type)) {
       setErrorMessage(
         "Format file tidak didukung. Gunakan JPEG, PNG, atau WebP.",
@@ -177,6 +178,17 @@ export default function HomePage() {
       setErrorMessage(`Ukuran file melebihi ${MAX_FILE_SIZE_MB}MB.`);
       return;
     }
+
+    // Client-side heuristic validation: only allow obvious leaf images
+    const { valid, reason } = await validateLeafImage(candidate);
+    if (!valid) {
+      setErrorMessage(
+        reason ??
+          "Gambar yang diunggah bukan daun tanaman yang didukung (Anggur, Apel, Jagung, Kentang, Tomat, Buncis, Cabai, Durian, Pisang, Selada).",
+      );
+      return;
+    }
+
     setFile(candidate);
     setResult(null);
     setErrorMessage(null);
@@ -184,22 +196,22 @@ export default function HomePage() {
   }, [resetPrediction]);
 
   const handleFileInputChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (event) => {
+    async (event) => {
       const files = event.target.files;
       if (!files || files.length === 0) {
         return;
       }
-      validateAndStoreFile(files[0]);
+      await validateAndStoreFile(files[0]);
     },
     [validateAndStoreFile],
   );
 
   const handleDrop = useCallback<DragEventHandler<HTMLLabelElement>>(
-    (event) => {
+    async (event) => {
       event.preventDefault();
       setIsDragging(false);
       if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
-        validateAndStoreFile(event.dataTransfer.files[0]);
+        await validateAndStoreFile(event.dataTransfer.files[0]);
       }
     },
     [validateAndStoreFile],
@@ -305,7 +317,7 @@ export default function HomePage() {
                       Analisis instan
                     </p>
                     <p className="text-sm text-slate-700">
-                      Hasil prediksi beserta keyakinan model tampil dalam
+                      Hasil prediksi beserta Keyakinan Model tampil dalam
                       hitungan detik.
                     </p>
                   </div>
@@ -362,6 +374,9 @@ export default function HomePage() {
                         </p>
                         <p className="text-xs sm:text-sm text-slate-500">
                           Format: {acceptedFormats} | Maks {MAX_FILE_SIZE_MB}MB
+                        </p>
+                        <p className="text-xs sm:text-[0.8rem] text-emerald-700">
+                          Hanya untuk daun: Anggur, Apel, Jagung, Kentang, Tomat, Buncis, Cabai, Durian, Pisang, Selada
                         </p>
                       </div>
                       <input
